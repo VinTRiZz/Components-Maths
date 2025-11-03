@@ -24,6 +24,9 @@ struct Point
 #ifdef QT_CORE_LIB
     Point(const QPointF & p) { x = p.x(), y = p.y(); }
     Point(QPointF && p) { x = p.x(), y = p.y(); }
+    operator QPointF() const {
+        return QPointF(x, y);
+    }
 #endif // QT_CORE_LIB
 
     Point & operator=(const Point & p) { x = p.x, y = p.y; return *this; }
@@ -32,7 +35,10 @@ struct Point
     bool operator!=(const Point & p) { return (x != p.x) || (y != p.y); }
     ~Point() {}
 
-    std::string str(const uint strSize, const char delim) const;
+    bool operator<(const Point& p) const { return x < p.x || (x == p.x && y < p.y); }
+    bool operator>(const Point& p) const { return !(*this < p); }
+
+    std::string str(const uint strSize = 5, const char delim = ' ') const;
     Point & fromStr(const std::string & pointStr, const char delim);
 
     Point offset(double xo, double yo) const { return Point(x + xo, y + yo); }
