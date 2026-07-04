@@ -5,6 +5,9 @@
 #include <QVector>
 #include <QFile>
 #include <QRectF>
+#else
+#include <string>
+#include <vector>
 #endif // QT_CORE_LIB
 
 namespace Maths
@@ -39,7 +42,15 @@ struct Point
     bool operator>(const Point& p) const { return !(*this < p); }
 
     std::string str(const uint strSize = 5, const char delim = ' ') const;
-    Point & fromStr(const std::string & pointStr, const char delim);
+
+    /**
+     * @brief fromStr   Deserialize point
+     * @param pointStr
+     * @param delim
+     * @throws std::invalid_argument if format is invalid
+     * @return
+     */
+    Point & fromStr(const std::string & pointStr, const char delim) noexcept(false);
 
     Point offset(double xo, double yo) const { return Point(x + xo, y + yo); }
 
@@ -90,7 +101,9 @@ std::string convertRectToString(const Point & leftDownCorner, const Point & righ
 std::pair<Point, Point> convertRectFromString(const std::string &rectStr, const char rectDelim = 0, const char pointDelim = 0);
 
 // Qt using
+#ifdef QT_CORE_LIB
 std::string convertRectToStringQ(const QRectF & rect, const uint strSize, const char rectDelim = 0, const char pointDelim = 0);
 QRectF convertRectFromStringQ(const std::string &rectStr, const char rectDelim = 0, const char pointDelim = 0);
+#endif // QT_CORE_LIB
 
 }

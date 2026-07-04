@@ -1,6 +1,7 @@
 #include "point.hpp"
 
 #include <algorithm>
+#include <stdexcept>
 #include <utility>
 #include <math.h>
 
@@ -8,6 +9,8 @@
 #ifdef QT_CORE_LIB
 #include <QDebug>
 #endif // QT_CORE_LIB
+
+#include <Components/Logger/Logger.h>
 
 #include "../algorithms/common.hpp"
 
@@ -64,22 +67,15 @@ std::string Point::str(const uint strSize, const char delim) const
 Point & Point::fromStr(const std::string & pointStr, const char delim)
 {
     x = y = 0;
-    try {
-        const uint strSize = pointStr.size() / 2;
-        if (pointStr.length() < strSize)
-            return *this;
+    const uint strSize = pointStr.size() / 2;
+    if (pointStr.length() < strSize)
+        return *this;
 
-        std::string buffer(pointStr.begin(), pointStr.begin() + strSize);
-        x = std::stod(buffer);
+    std::string buffer(pointStr.begin(), pointStr.begin() + strSize);
+    x = std::stod(buffer);
 
-        buffer = std::string(pointStr.begin() + strSize + (delim != 0), pointStr.end());
-        y = std::stod(buffer);
-
-    } catch (std::invalid_argument & ex)
-    {
-        qDebug() << "Got invalid string for std::stod in point string:" << pointStr.c_str();
-    }
-
+    buffer = std::string(pointStr.begin() + strSize + (delim != 0), pointStr.end());
+    y = std::stod(buffer);
     return *this;
 }
 
@@ -109,6 +105,7 @@ void rotatePoint(Point &p, const Point & rotateCenter, const double rotateAngleI
     p.y = (bufferPoint.x - rotateCenter.x) * sin(rotateAngleInRad) + (bufferPoint.y - rotateCenter.y) * cos(rotateAngleInRad) + rotateCenter.y;
 }
 
+#ifdef QT_CORE_LIB
 QVector<Point> createEllypsePointsQ(const Point center, const double a, const double b, double accuracy)
 {
     QVector<Point> pointsBuffer;
@@ -170,6 +167,7 @@ QVector<Point> createRectPointsQ(const Point leftBottom, const Point rightTop)
 
     return rectPoints;
 }
+#endif // QT_CORE_LIB
 
 std::vector<Point> createEllypsePoints(const Point center, const double a, const double b, double accuracy)
 {
@@ -233,6 +231,7 @@ std::vector<Point> createRectPoints(const Point leftBottom, const Point rightTop
     return rectPoints;
 }
 
+#ifdef QT_CORE_LIB
 Point calculateCenterQ(const QVector<Point> &points)
 {
     Point buffer;
@@ -246,6 +245,7 @@ Point calculateCenterQ(const QVector<Point> &points)
     }
     return buffer;
 }
+#endif // QT_CORE_LIB
 
 Point calculateCenter(const std::vector<Point> &points)
 {
